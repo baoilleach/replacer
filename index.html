@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>ReplaceR</title>
+
+    <!-- Javascript -->
+    <script src="static/js/rgroups.0.js"></script>
+    <script src="static/js/rgroups.1.js"></script>
+    <script src="static/js/rgroups.2.js"></script>
+    <script src="static/js/rgroups.3.js"></script>
+    <script src="static/js/rgroups.4.js"></script>
+    <script src="static/js/linkers.0.js"></script>
+    <script src="static/js/linkers.1.js"></script>
+    <script src="static/js/linkers.2.js"></script>
+    <script src="static/js/linkers.3.js"></script>
+    <script src="static/js/linkers.4.js"></script>
+
+    <script src="static/ext/js/jquery-3.3.1.min.js"></script>
+    <script src="static/ext/js/bootstrap-5.0.2.min.js"></script>
+    <script src="static/ext/js/underscore-1.8.3.min.js"></script>
+    <script src="static/ext/js/backbone-1.3.3.min.js"></script>
+
+    <script src="static/js/RDKit_minimal.js"></script>
+    <script src="jsme/jsme.nocache.js"></script>
+    <script src="static/js/replacer.js"></script>
+
+    <!-- CSS -->
+    <link href="static/ext/css/bootstrap-5.0.2.min.css" rel="stylesheet">
+    <link href="static/css/replacer.css" rel="stylesheet">
+</head>
+<body>
+    <div class="row mt-3">
+        <div class="col-sm-3"></div>    
+        <div class="col-sm-3 mt-auto mb-auto">
+            <center>
+                <h1>ReplaceR</h1>
+                <p>&nbsp;</p>
+                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" class="btn-check" name="btnradio" id="radio_rgroups" autocomplete="off" value="rgroups" checked>
+                    <label class="btn btn-outline-primary" for="radio_rgroups">R groups</label>
+                    <input type="radio" class="btn-check" name="btnradio" id="radio_linkers" autocomplete="off" value="linkers">
+                    <label class="btn btn-outline-primary" for="radio_linkers">Linkers</label>
+                </div>
+            </center>
+        </div>    
+        <div class="col-sm-4">
+            <div code="JME.class" name="JME" archive="JME.jar" width="360" height="315" id="JME">
+        </div>
+        <div class="col-sm-2"></div>    
+    </div>
+    <div class="row" id="search">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8" id="searchresults"></div>
+        <div class="col-sm-2"></div>
+    </div>
+
+    <div class="row" id="replacer">
+        <div class="col-sm-5 limbo" id="dv_before"><center><h2 id="before">Before</h2></center><div id="before_imgs"></div></div>
+        <div class="col-sm-2" id="query">
+            <div id="query_img"></div>
+            <div id="helptext"></div>
+        </div>
+        <div class="col-sm-5 limbo" id="dv_after"><center><h2 id="after">After</h2></center><div id="after_imgs"></div></div>
+    </div>
+
+</body>
+</html>
