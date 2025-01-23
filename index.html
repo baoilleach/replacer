@@ -33,39 +33,40 @@
     <link href="static/css/replacer.css" rel="stylesheet">
 </head>
 <body>
+  <div class="container-fluid">
     <div class="row mt-3">
-        <div class="col-sm-3"></div>    
-        <div class="col-sm-3 mt-auto mb-auto">
+        <div class="col-sm-3">
             <center>
-                <h1>ReplaceR</h1>
+                <h1 id="title">ReplaceR</h1>
                 <p>&nbsp;</p>
-                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                <div class="btn-group mb-5" role="group" aria-label="Basic radio toggle button group">
                     <input type="radio" class="btn-check" name="btnradio" id="radio_rgroups" autocomplete="off" value="rgroups" checked>
                     <label class="btn btn-outline-primary" for="radio_rgroups">R groups</label>
                     <input type="radio" class="btn-check" name="btnradio" id="radio_linkers" autocomplete="off" value="linkers">
                     <label class="btn btn-outline-primary" for="radio_linkers">Linkers</label>
                 </div>
             </center>
-        </div>    
-        <div class="col-sm-4">
-            <div code="JME.class" name="JME" archive="JME.jar" width="360" height="315" id="JME">
+            <div code="JME.class" name="JME" archive="JME.jar" width="360" height="315" id="JME"></div>
+            <div id="jsme_help"><center><p class="small">Press R over atom for attachment point</p></center></div>
         </div>
-        <div class="col-sm-2"></div>    
-    </div>
-    <div class="row" id="search">
-        <div class="col-sm-2"></div>
-        <div class="col-sm-8" id="searchresults"></div>
-        <div class="col-sm-2"></div>
-    </div>
-
-    <div class="row" id="replacer">
-        <div class="col-sm-5 limbo" id="dv_before"><center><h2 id="before">Before</h2></center><div id="before_imgs"></div></div>
-        <div class="col-sm-2" id="query">
-            <div id="query_img"></div>
-            <div id="helptext"></div>
+        <div class="col-sm-9">
+            <div class="row" id="search">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8" id="searchresults">
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+            <div class="row" id="replacer">
+                <div class="col-sm-5 limbo" id="dv_before"><center><h2 id="before">Before</h2></center><div id="before_imgs"></div></div>
+                <div class="col-sm-2" id="query">
+                    <center><h2>Query</h2></center>
+                    <div id="query_div"></div>
+                    <div id="helptext" class="small"></div>
+                </div>
+                <div class="col-sm-5 limbo" id="dv_after"><center><h2 id="after">After</h2></center><div id="after_imgs"></div></div>
+            </div>
         </div>
-        <div class="col-sm-5 limbo" id="dv_after"><center><h2 id="after">After</h2></center><div id="after_imgs"></div></div>
     </div>
-
+  </div>
 </body>
 </html>
