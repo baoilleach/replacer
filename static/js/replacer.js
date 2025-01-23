@@ -175,7 +175,7 @@ function HandleResult(smi, molidx)
     state.set("terminate", true);
   }
   else {
-    var elem = $('<a href="/#replace/' + state.get("searchtype") + '/' + molidx + '" ><img data-molidx="' + molidx + '" src="https://www.simolecule.com/cdkdepict/depict/cow/svg?abbr=off&hdisp=provided&disp=bridgehead&annotate=colmap&showtitle=true&smi=' + encodeURIComponent(CXNSmiles(smi)) + '" /></a>\n')[0];
+    var elem = $('<a href="#replace/' + state.get("searchtype") + '/' + molidx + '" ><img data-molidx="' + molidx + '" src="https://www.simolecule.com/cdkdepict/depict/cow/svg?abbr=off&hdisp=provided&disp=bridgehead&annotate=colmap&showtitle=true&smi=' + encodeURIComponent(CXNSmiles(smi)) + '" /></a>\n')[0];
 
     if (state.get("first_result")) {
       state.set("first_result", false);
@@ -256,7 +256,7 @@ function Replace()
         var relfreq = freqs[relmolidx_0];
         var img_id = section + "_" + relmolidx;
         mhtml.push('<div>\n');
-        mhtml.push('<a href="/#replace/' + state.get("searchtype") + '/' + relmolidx_0 + '"><img id="' + img_id + '" data-freq="' + relfreq + '" data-co="' + relco + '" src="https://www.simolecule.com/cdkdepict/depict/cow/svg?abbr=off&hdisp=provided&disp=bridgehead&showtitle=true&smi=' + encodeURIComponent(CXNSmiles(idx2smi[relmolidx])) + '" /></a>\n');
+        mhtml.push('<a href="#replace/' + state.get("searchtype") + '/' + relmolidx_0 + '"><img id="' + img_id + '" data-freq="' + relfreq + '" data-co="' + relco + '" src="https://www.simolecule.com/cdkdepict/depict/cow/svg?abbr=off&hdisp=provided&disp=bridgehead&showtitle=true&smi=' + encodeURIComponent(CXNSmiles(idx2smi[relmolidx])) + '" /></a>\n');
         mhtml.push('<br/>');
         mhtml.push('<span class="details">' + (j+1) + '.&nbsp;');
         mhtml.push('<span class="co-occurrence">' + relco + '</span>/<span class="frequency">'+ relfreq + '</span>');
