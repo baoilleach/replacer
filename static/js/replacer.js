@@ -248,11 +248,11 @@ function Replace()
     var mydiv = (i==0) ? $('#before_imgs') : $('#after_imgs');
     var mhtml = [];
     if (relatives !== null) {
-      for (var j=0; j<relatives.length; j++) {
-        var relmolidx = relatives[j][0];
+      for (var j=0; j<relatives.length; j+=2) {
+        var relmolidx = relatives[j];
         // Normalise to the 0 permutation for everything except the depiction
         var relmolidx_0 = (relmolidx > group_total) ? relmolidx - group_total : relmolidx;
-        var relco = relatives[j][1];
+        var relco = relatives[j+1];
         var relfreq = freqs[relmolidx_0];
         var img_id = section + "_" + relmolidx;
         mhtml.push('<div>\n');
