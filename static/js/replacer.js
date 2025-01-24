@@ -173,7 +173,6 @@ function StartSearch()
   state.set("replace", undefined);
 
   $('#search').show().addClass("limbo");
-  state.set("first_result", true);
   state.set("terminate", false);
   worker.postMessage({smarts: smarts, qsmi: smiles, searchtype: state.get("searchtype"), startidx: 0});
 }
@@ -229,7 +228,7 @@ function Replace()
         mhtml.push('<div>\n');
         mhtml.push('<a href="#replace/' + state.get("searchtype") + '/' + relmolidx_0 + '"><img id="' + img_id + '" data-freq="' + relfreq + '" data-co="' + relco + '" src="https://www.simolecule.com/cdkdepict/depict/cow/svg?abbr=off&hdisp=provided&disp=bridgehead&showtitle=true&smi=' + encodeURIComponent(CXNSmiles(idx2smi[relmolidx])) + '" /></a>\n');
         mhtml.push('<br/>');
-        mhtml.push('<span class="details">' + (j+1) + '.&nbsp;');
+        mhtml.push('<span class="details">' + (j/2+1) + '.&nbsp;');
         mhtml.push('<span class="co-occurrence">' + relco + '</span>/<span class="frequency">'+ relfreq + '</span>');
         mhtml.push('</span>');
         mhtml.push('</div>\n');
