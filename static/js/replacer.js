@@ -28,9 +28,9 @@ state.on("change:hovertarget", ShowDetails);
 // Start the Web worker
 worker = new Worker('static/js/worker.openbabel.js');
 worker.onmessage = (e) => {
-  if (e.data.type != "status") {
+  /*if (e.data.type != "status") {
     console.log(e.data);
-  }
+  }*/
   if (!(e.data.searchtype == state.get("searchtype") &&
         e.data.qsmi == state.get("drawn"))) {
     return;
@@ -91,7 +91,7 @@ function HandleInvalid()
 
 function TidySmiles(smi)
 {
-  return smi.replace(/\[R\]/g, "*").replace(/\*/g, "[#0]");
+  return smi.replace(/\[R\]/g, "[#0]");
 }
 
 var Router = Backbone.Router.extend({
@@ -103,8 +103,10 @@ var Router = Backbone.Router.extend({
 
   search: function(searchtype, smiles) {
     if (TidySmiles(document.JME.smiles()) != smiles) {
-      var mol = RDKit.get_mol(smiles);
+      // both [R] and * get converted to R in the MOL file so we need to hack one of them
+      var mol = RDKit.get_mol(smiles.replace(/\*/g, "[Xe]"));
       var sdf = mol.get_molblock();
+      sdf = sdf.replace(/Xe/g, "*");
       document.JME.readMolFile(sdf);
     }
     state.set("drawn", smiles);
