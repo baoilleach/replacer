@@ -37,7 +37,7 @@
     <div class="row mt-3">
         <div class="col-sm-3">
             <center>
-                <h1 id="title">ReplaceR</h1>
+                <h1 id="title"><a href="./" class="text-decoration-none">ReplaceR</a></h1>
                 <p>&nbsp;</p>
                 <div class="btn-group mb-5" role="group" aria-label="Basic radio toggle button group">
                     <input type="radio" class="btn-check" name="btnradio" id="radio_rgroups" autocomplete="off" value="rgroups" checked>
@@ -45,18 +45,17 @@
                     <input type="radio" class="btn-check" name="btnradio" id="radio_linkers" autocomplete="off" value="linkers">
                     <label class="btn btn-outline-primary" for="radio_linkers">Linkers</label>
                 </div>
+                <div code="JME.class" name="JME" archive="JME.jar" width="360" height="315" id="JME"></div>
+                <div id="jsme_help"><center><p class="small">Press R over atom for attachment point</p></center></div>
             </center>
-            <div code="JME.class" name="JME" archive="JME.jar" width="360" height="315" id="JME"></div>
-            <div id="jsme_help"><center><p class="small">Press R over atom for attachment point</p></center></div>
         </div>
         <div class="col-sm-9">
-            <div class="row" id="search">
+            <div class="row" style="display: none;" id="search">
                 <div class="col-sm-2"></div>
-                <div class="col-sm-8" id="searchresults">
-                </div>
+                <div class="col-sm-8" id="searchresults"></div>
                 <div class="col-sm-2"></div>
             </div>
-            <div class="row" id="replacer">
+            <div class="row" style="display: none;" id="replacer">
                 <div class="col-sm-5 limbo" id="dv_before"><center><h2 id="before">Before</h2></center><div id="before_imgs"></div></div>
                 <div class="col-sm-2" id="query">
                     <center><h2>Query</h2></center>
@@ -64,6 +63,17 @@
                     <div id="helptext" class="small"></div>
                 </div>
                 <div class="col-sm-5 limbo" id="dv_after"><center><h2 id="after">After</h2></center><div id="after_imgs"></div></div>
+            </div>
+            <div class="row" id="help">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8">
+                    <p>In the course of a medicinal chemistry project, molecules progress through a series of changes that often involve replacement of R groups (or linkers). A key insight is that there is a certain order to these changes; in general, R groups that are simpler (in size, or in ease of synthesis, or just cheaper) will be made before those are more complex. It would be unusual to make the bromide, without having already tried chloride; if you see a tetrazole, then a carboxylic acid was likely already made.</p>
+                    <p>Given true time series data from projects, we could work out this information. However, even without this, we can infer similar information from co-occurrence data in matched molecular series across publications and patents in ChEMBL (see this 2019 talk of mine for more details). To give a sense of the method, consider that butyl co-occurs with propyl in matched series in 801 papers, but given that propyl occurs in 2765 series versus butyl's 1905 we infer that butyl is typically made <i>after</i> propyl (if at all). Groups in the 'after' panel are sorted by co-occurence with the query. Groups in the 'before' panel are instead sorted by co-occurrence/frequency - if we didn't do this, hydrogen or methyl would always be top of the list!</p>
+                    <p>Note that no biological activity data or physicochemical property data (e.g. MWs) is used in this analysis. The suggestions are not based on bioisosteres, SAR transfer or QSAR models, but are simply a reflection of historical choices made by medicinal chemists across a large number of publications. I note that the <a href="https://pubs.acs.org/doi/10.1021/acs.jcim.0c01143">2021 paper</a> by Mahendra Awale et al touches on many of the same issues.</p>
+                    <p>This webapp may be useful to medicinal chemists. But in particular, computational chemists and cheminformaticians will find the app and the data behind it useful to support automatic enumeration and virtual screening of likely next steps. Note that the webapp just lists the 'nearest' 12 groups before and after. If you are interested in the full dataset, or just want to give feedback, drop me a line at baoilleach@gmail.com or file an issue on <a href="https://github.com/baoilleach/replacer">GitHub</a>.</p>
+                    <p><b>Cheminformatics Credits:</b> EMBL-EBI Chemical Biology Services Team for ChEMBL data, John Mayfield et al for Chemistry Development Kit and CDKDepict, Geoff Hutchison et al for Open Babel, Greg Landrum et al for RDKit, Chen Jiang for openbabel.js, Michel Moreau for rdkit.js, Peter Ertl and Bruno Bienfait for JSME, Noel O'Boyle (me) for ReplaceR.</p>
+                </div>
+                <div class="col-sm-2"></div>
             </div>
         </div>
     </div>

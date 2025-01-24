@@ -6,15 +6,12 @@ window
     $(function() {
       Initialize();
     });
-
   });
 
 var STATE = Backbone.Model.extend({
   defaults: {
     "searchtype": "rgroups",
-    "help": false,
     "terminate": false,
-    "first_result": undefined,
     "drawn": undefined,
     "smarts": undefined,
     "replace": undefined,
@@ -26,7 +23,6 @@ window.state = new STATE;
 state.on("change:drawn", StartSearch);
 state.on("change:searchtype", StartSearch);
 state.on("change:replace", Replace);
-state.on("change:help", HandleHelp);
 state.on("change:hovertarget", ShowDetails);
 
 // Start the Web worker
@@ -87,23 +83,10 @@ function HandleValid()
   $('#search').removeClass("limbo");
   $('#searchresults').html("");
 }
+
 function HandleInvalid()
 {
   $('search').addClass("limbo");
-}
-
-function HandleHelp()
-{
-  help = state.get("help");
-  if (help) {
-    $('#help').removeClass("hide");
-    $('#search').hide();
-    $('#about').html("Close");
-  } else {
-    $('#search').show();
-    $('#help').addClass("hide");
-    $('#about').html("About");
-  }
 }
 
 function TidySmiles(smi)
@@ -145,8 +128,8 @@ function jsmeOnLoad() {
     console.log("Navigating to " + navigation_url);
     app.navigate(navigation_url, {trigger: true});
   });
-  $('#JME').mouseenter(function() {console.log("enter"); $('#jsme_help').show();})
-           .mouseleave(function() {console.log("leave");$('#jsme_help').hide();});
+  $('#JME').mouseenter(function() {$('#jsme_help').show();})
+           .mouseleave(function() {$('#jsme_help').hide();});
 }
 
 function Initialize()
@@ -160,13 +143,9 @@ function Initialize()
   Backbone.history.start();
 }
 
-function InsertAfter(referenceNode, newNode)
-{
-  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-}
-
 function HandleResult(smi, molidx)
 {
+  $('#help').hide();
   var png_section = document.getElementById("searchresults");
   var children = png_section.children;
   if (children.length > 30) {
@@ -176,16 +155,7 @@ function HandleResult(smi, molidx)
   }
   else {
     var elem = $('<a href="#replace/' + state.get("searchtype") + '/' + molidx + '" ><img data-molidx="' + molidx + '" src="https://www.simolecule.com/cdkdepict/depict/cow/svg?abbr=off&hdisp=provided&disp=bridgehead&annotate=colmap&showtitle=true&smi=' + encodeURIComponent(CXNSmiles(smi)) + '" /></a>\n')[0];
-
-    if (state.get("first_result")) {
-      state.set("first_result", false);
-    }
-    if (children.length == 0) {
-      png_section.appendChild(elem);
-    }
-    else {
-      InsertAfter(children[children.length-1], elem);
-    }
+    png_section.appendChild(elem);
   }
 }
 
@@ -216,6 +186,7 @@ function Replace()
     return;
   }
   state.set("drawn", undefined);
+  $('#help').hide();
   $('#search').hide();
   $('#replacer').show();
 

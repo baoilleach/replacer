@@ -14,14 +14,9 @@ img {
 .limbo {
   opacity: 0.4;
 }
-.hide {
-  display: none;
-}
 #query {
   align-items: center;
   justify-content: space-around;
-}
-#query_div {
 }
 #query_img {
   box-shadow: 3px 3px 3px #22a;
