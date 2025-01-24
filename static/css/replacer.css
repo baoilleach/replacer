@@ -35,7 +35,14 @@ img {
   justify-content: space-around;
 }
 #before_imgs {
-  direction: rtl;
+  flex-direction: row-reverse;
+}
+@media (max-width: 576px) {
+  /* We want the top suggestion closest to the query */
+  #before_imgs {
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+  }
 }
 .model {
   color: gray;
