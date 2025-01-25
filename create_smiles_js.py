@@ -60,7 +60,9 @@ def ReadFreqs(fname, only_include=None):
     return originalidx_to_idx, freqs, lookup, reorder
 
 if __name__ == "__main__":
-    NUM_NBRS = 12 
+    FULL_DATASET = False
+    NUM_NBRS = 10000000 if FULL_DATASET else 12
+
     chembl_folder = "chembl_35"
 
     data_legacy = {
@@ -162,7 +164,8 @@ if __name__ == "__main__":
         # Write out information
         group = "rgroups" if grouptype == 0 else "linkers"
         for i in range(5):
-            ofname = f"static/js/{group}.{i}.js"
+            folder = "nbu" if FULL_DATASET else "static/js"
+            ofname = f"{folder}/{group}.{i}.js"
             with open(ofname, "w") as out:
                 if i == 0:
                     out.write(f"{group}_total = {NN};\n")
@@ -182,3 +185,10 @@ if __name__ == "__main__":
                     out.write(f"{group}_parents = ")
                     json.dump(nparents, out, separators=(',',':'))
                     out.write(";\n")
+
+        if FULL_DATASET: # prepare for release separate to the webapp
+            print("""
+Now run:
+   cat rgroups.*.js | sed 's/null/None/g' > rgroups.py
+   cat linkers.*.js | sed 's/null/None/g' > linkers.py
+""")
