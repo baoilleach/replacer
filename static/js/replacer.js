@@ -1,12 +1,34 @@
 CDK_DEPICT_URL = "https://www.simolecule.com/cdkdepict"
 
+ReadyToRock = true;
+OpenBabel = OpenBabelModule();
+OBMOL = undefined;
+OpenBabel.onRuntimeInitialized = function() {
+  conv = new OpenBabel.ObConversionWrapper();
+  conv.setInFormat('', 'smi');
+  conv.setOutFormat('', 'smi');
+  OBMOL = new OpenBabel.OBMol();
+  ReadyToRock = true;
+  console.log("Open Babel is ready");
+};
+
+function WaitForOB()
+{
+  if (ReadyToRock) {
+    Initialize();
+  }
+  else {
+    setTimeout(WaitForOB, 200);
+  }
+}
+
 window
   .initRDKitModule()
   .then(function (RDKit) {
     console.log("RDKit version: " + RDKit.version());
     window.RDKit = RDKit;
     $(function() {
-      Initialize();
+      WaitForOB();
     });
   });
 
@@ -138,6 +160,7 @@ function jsmeOnLoad() {
 
 function Initialize()
 {
+  console.log("READY!!!");
   $('#replacer').hide();
   $('input[name="btnradio"]').on('change', function() {
     console.log("radio button changed");
@@ -171,7 +194,12 @@ function StartSearch()
     $('#replace').addClass("limbo");
     return;
   }
-  var qmol = RDKit.get_qmol(smiles);
+
+  // Round-trip thru OB to use OB's aromaticity model, which will be needed when matching.
+  // e.g. O=c1ccc1=O will be converted to O=C1C=CC1=O, as otherwise won't match
+  var ok = conv.readString(OBMOL, smiles);
+  var obsmiles = conv.writeString(OBMOL, true);
+  var qmol = RDKit.get_qmol(obsmiles);
   var smarts = qmol.get_smarts();
   state.set("smarts", smarts);
   state.set("replace", undefined);
