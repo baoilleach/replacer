@@ -34,20 +34,51 @@ window
 
 var STATE = Backbone.Model.extend({
   defaults: {
+    "mode": "initial",  // Can be "initial", "search", or "replace"
     "searchtype": "rgroups",
     "terminate": false,
-    "drawn": undefined,
-    "smarts": undefined,
-    "replace": undefined,
-    "hovertarget": undefined
+    "drawn": null,      // Using null instead of undefined for explicit values
+    "smarts": null,
+    "replace": null,
+    "hovertarget": null
   }
 });
 
 window.state = new STATE;
-state.on("change:drawn", StartSearch);
-state.on("change:searchtype", StartSearch);
-state.on("change:replace", Replace);
-state.on("change:hovertarget", ShowDetails);
+state.on("change", function(model) {
+    const changed = model.changed;
+
+    // If mode changed to "search", we need to re-run the search
+    if (changed.hasOwnProperty('mode')) {
+        if (changed.mode === "search") {
+            StartSearch();
+        }
+        else if (changed.mode === "replace") {
+            Replace();
+        }
+    }
+    // Only one property changed - handle specific cases
+    if (Object.keys(changed).length === 1) {
+        if (changed.hasOwnProperty('drawn') || changed.hasOwnProperty('searchtype')) {
+            StartSearch();
+        } else if (changed.hasOwnProperty('replace')) {
+            Replace();
+        } else if (changed.hasOwnProperty('hovertarget')) {
+            ShowDetails();
+        }
+    } else {
+        // Multiple properties changed - handle holistically
+        if (changed.hasOwnProperty('drawn') || changed.hasOwnProperty('searchtype')) {
+            StartSearch();
+        }
+        if (changed.hasOwnProperty('replace')) {
+            Replace();
+        }
+        if (changed.hasOwnProperty('hovertarget')) {
+            ShowDetails();
+        }
+    }
+});
 
 // Start the Web worker
 worker = new Worker('static/js/worker.openbabel.js');
@@ -119,10 +150,20 @@ function TidySmiles(smi)
 }
 
 var Router = Backbone.Router.extend({
-
   routes: {
     "search/:searchtype/:smiles/": "search",
     "replace/:searchtype/:molidx": "replace",
+    "": "default"
+  },
+
+  default: function() {
+    document.JME.reset();  // Clear the JSME editor
+    state.set({
+      mode: "initial",
+      searchtype: "rgroups",
+      drawn: null,
+      replace: null
+    });
   },
 
   search: function(searchtype, smiles) {
@@ -133,16 +174,27 @@ var Router = Backbone.Router.extend({
       sdf = sdf.replace(/Xe/g, "*");
       document.JME.readMolFile(sdf);
     }
-    state.set("drawn", smiles);
+    $.each($('input[name=btnradio]'), function(index, radio) {
+      $(radio).prop("checked", radio.value === searchtype);
+    });
 
-    $('#radio_' + searchtype).prop("checked", true);
-    state.set("searchtype", searchtype);
+    state.set({
+      mode: "search",
+      searchtype: searchtype,
+      drawn: smiles,
+      replace: null
+    });
   },
 
   replace: function(searchtype, molidx) {
-    $('#radio_' + searchtype).prop("checked", true);
-    state.set("searchtype", searchtype);
-    state.set("replace", molidx);
+    $.each($('input[name=btnradio]'), function(index, radio) {
+      $(radio).prop("checked", radio.value === searchtype);
+    });
+    state.set({
+      mode: "replace",
+      searchtype: searchtype,
+      replace: molidx
+    });
   }
 });
 
@@ -150,9 +202,11 @@ function jsmeOnLoad() {
   // Add behaviour to JSME
   document.JME.setCallBack("AfterStructureModified", function(jsmeEvent) {
     var myjsme = jsmeEvent.src;
-    var navigation_url = "search/"+state.get("searchtype")+"/"+encodeURIComponent(TidySmiles(myjsme.smiles()))+"/";
-    console.log("Navigating to " + navigation_url);
-    app.navigate(navigation_url, {trigger: true});
+    if (myjsme.smiles() !== "") {
+      var navigation_url = "search/"+state.get("searchtype")+"/"+encodeURIComponent(TidySmiles(myjsme.smiles()))+"/";
+      console.log("Navigating to " + navigation_url);
+      app.navigate(navigation_url, {trigger: true});
+    }
   });
   $('#JME').mouseenter(function() {$('#jsme_help').show();})
            .mouseleave(function() {$('#jsme_help').hide();});
@@ -163,8 +217,13 @@ function Initialize()
   console.log("READY!!!");
   $('#replacer').hide();
   $('input[name="btnradio"]').on('change', function() {
-    console.log("radio button changed");
-    state.set("searchtype", $(this).val());
+    var searchtype = $(this).val();
+    state.set("searchtype", searchtype);
+
+    var currentSmiles = state.get("drawn");
+    if (currentSmiles != "" && currentSmiles != null) {
+      app.navigate("search/" + searchtype + "/" + encodeURIComponent(currentSmiles) + "/", {trigger: true});
+    }
   });
   app = new Router();
   Backbone.history.start();
@@ -189,11 +248,13 @@ function HandleResult(smi, molidx)
 function StartSearch()
 {
   var smiles = state.get("drawn");
-  if (smiles === undefined || smiles === "") {
+  if (smiles === null || smiles === "") {
     $('#search').addClass("limbo");
     $('#replace').addClass("limbo");
     return;
   }
+
+  $('#replacer').hide();
 
   // Round-trip thru OB to use OB's aromaticity model, which will be needed when matching.
   // e.g. O=c1ccc1=O will be converted to O=C1C=CC1=O, as otherwise won't match
@@ -202,7 +263,6 @@ function StartSearch()
   var qmol = RDKit.get_qmol(obsmiles);
   var smarts = qmol.get_smarts();
   state.set("smarts", smarts);
-  state.set("replace", undefined);
 
   $('#search').show().addClass("limbo");
   state.set("terminate", false);
@@ -212,11 +272,10 @@ function StartSearch()
 function Replace()
 {
   var molidx = state.get("replace");
-  if (molidx === undefined) {
+  if (molidx === null) {
     $('#replacer').hide();
     return;
   }
-  state.set("drawn", undefined);
   $('#help').hide();
   $('#search').hide();
   $('#replacer').show();
@@ -284,14 +343,14 @@ function HandleImgHover()
 
 function HandleImgNoHover()
 {
-  state.set("hovertarget", undefined);
+  state.set("hovertarget", null);
 }
 
 function ShowDetails()
 {
   var targetid = state.get("hovertarget");
-  if (typeof(targetid) === "undefined") {
-     $('#helptext').html("");
+  if (targetid === null) {
+    $('#helptext').html("");
     return;
   }
 
