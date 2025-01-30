@@ -258,9 +258,10 @@ function StartSearch()
 
   // Round-trip thru OB to use OB's aromaticity model, which will be needed when matching.
   // e.g. O=c1ccc1=O will be converted to O=C1C=CC1=O, as otherwise won't match
-  var ok = conv.readString(OBMOL, smiles);
+  // Note that we need to handle R groups, e.g. "C[#0]" - OB won't read this directly
+  var ok = conv.readString(OBMOL, smiles.replace(/#0/g, "Xe"));
   var obsmiles = conv.writeString(OBMOL, true);
-  var qmol = RDKit.get_qmol(obsmiles);
+  var qmol = RDKit.get_qmol(obsmiles.replace(/Xe/g, "#0"));
   var smarts = qmol.get_smarts();
   state.set("smarts", smarts);
 
