@@ -211,6 +211,25 @@ function jsmeOnLoad() {
       app.navigate(navigation_url, {trigger: true});
     }
   });
+
+  // Add drag event handlers
+  const jsmeElement = document.getElementById('JME');
+  jsmeElement.addEventListener('drop', function(e) {
+    e.preventDefault();
+    const htmlData = e.dataTransfer.getData('text/html');
+    const molidx = $(htmlData).find('img').data('molidx');
+    var idx2smi = (state.get("searchtype") == "rgroups") ? rgroups_idx2smi : linkers_idx2smi;
+    var smiles = idx2smi[molidx];
+    if (TidySmiles(document.JME.smiles()) != smiles) {
+      var nsmi = smiles.replace(/\[1\*\]/, "[#0]").replace(/\*/g, "[#0]");
+      var mol = RDKit.get_mol(nsmi)
+      var sdf = mol.get_molblock();
+      document.JME.readMolFile(sdf);
+      var navigation_url = "search/"+state.get("searchtype")+"/"+encodeURIComponent(TidySmiles(document.JME.smiles()))+"/";
+      app.navigate(navigation_url, {trigger: true});
+    }
+  }, true);
+
   $('#JME').mouseenter(function() {$('#jsme_help').show();})
            .mouseleave(function() {$('#jsme_help').hide();});
 }
