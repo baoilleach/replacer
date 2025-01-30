@@ -50,36 +50,20 @@ window.state = new STATE;
 state.on("change", function(model) {
     const changed = model.changed;
 
-    // If mode changed to "search", we need to re-run the search
-    if (changed.hasOwnProperty('mode')) {
-        if (changed.mode === "search") {
-            StartSearch();
-        }
-        else if (changed.mode === "replace") {
-            Replace();
-        }
+    // Handle mode changes first
+    if (changed.mode === "search") {
+        StartSearch();
+        return;
     }
-    // Only one property changed - handle specific cases
-    if (Object.keys(changed).length === 1) {
-        if (changed.hasOwnProperty('drawn') || changed.hasOwnProperty('searchtype')) {
-            StartSearch();
-        } else if (changed.hasOwnProperty('replace')) {
-            Replace();
-        } else if (changed.hasOwnProperty('hovertarget')) {
-            ShowDetails();
-        }
-    } else {
-        // Multiple properties changed - handle holistically
-        if (changed.hasOwnProperty('drawn') || changed.hasOwnProperty('searchtype')) {
-            StartSearch();
-        }
-        if (changed.hasOwnProperty('replace')) {
-            Replace();
-        }
-        if (changed.hasOwnProperty('hovertarget')) {
-            ShowDetails();
-        }
+    if (changed.mode === "replace") {
+        Replace();
+        return;
     }
+
+    // Handle other changes
+    if (changed.drawn || changed.searchtype) StartSearch();
+    if (changed.replace) Replace();
+    if (changed.hovertarget) ShowDetails();
 });
 
 // Start the Web worker
