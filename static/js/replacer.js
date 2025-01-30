@@ -1,6 +1,8 @@
 CDK_DEPICT_URL = "https://www.simolecule.com/cdkdepict"
 
-ReadyToRock = true;
+OB_is_Ready = false;
+JSME_is_Ready = false;
+
 OpenBabel = OpenBabelModule();
 OBMOL = undefined;
 OpenBabel.onRuntimeInitialized = function() {
@@ -8,17 +10,17 @@ OpenBabel.onRuntimeInitialized = function() {
   conv.setInFormat('', 'smi');
   conv.setOutFormat('', 'smi');
   OBMOL = new OpenBabel.OBMol();
-  ReadyToRock = true;
+  OB_is_Ready = true;
   console.log("Open Babel is ready");
 };
 
-function WaitForOB()
+function WaitForOB_and_JSME()
 {
-  if (ReadyToRock) {
+  if (OB_is_Ready && JSME_is_Ready) {
     Initialize();
   }
   else {
-    setTimeout(WaitForOB, 200);
+    setTimeout(WaitForOB_and_JSME, 200);
   }
 }
 
@@ -28,7 +30,7 @@ window
     console.log("RDKit version: " + RDKit.version());
     window.RDKit = RDKit;
     $(function() {
-      WaitForOB();
+      WaitForOB_and_JSME();
     });
   });
 
@@ -199,6 +201,7 @@ var Router = Backbone.Router.extend({
 });
 
 function jsmeOnLoad() {
+  JSME_is_Ready = true;
   // Add behaviour to JSME
   document.JME.setCallBack("AfterStructureModified", function(jsmeEvent) {
     var myjsme = jsmeEvent.src;
