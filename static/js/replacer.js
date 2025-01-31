@@ -269,10 +269,13 @@ function StartSearch()
   var obsmiles = conv.writeString(OBMOL, true);
   var qmol = RDKit.get_qmol(obsmiles.replace(/Xe/g, "#0"));
   var smarts = qmol.get_smarts();
-  state.set("smarts", smarts);
+
+  state.set({
+    smarts: smarts,
+    terminate: false
+  }, {silent: true});  // Prevent triggering change events
 
   $('#search').show().addClass("limbo");
-  state.set("terminate", false);
   worker.postMessage({smarts: smarts, qsmi: smiles, searchtype: state.get("searchtype"), startidx: 0});
 }
 
