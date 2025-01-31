@@ -21,7 +21,8 @@ const jsmeReady = new Promise(resolve => {
         jsmeElement.addEventListener('drop', function(e) {
             e.preventDefault();
             const htmlData = e.dataTransfer.getData('text/html');
-            const molidx = $(htmlData).find('img').data('molidx');
+            const element = $(htmlData);
+            const molidx = element.is("img") ? element.data('molidx') : element.find('img').data('molidx');
             var idx2smi = (state.get("searchtype") == "rgroups") ? rgroups_idx2smi : linkers_idx2smi;
             var smiles = idx2smi[molidx];
             if (TidySmiles(document.JME.smiles()) != smiles) {
@@ -85,7 +86,7 @@ var STATE = Backbone.Model.extend({
 window.state = new STATE;
 state.on("change", function(model) {
     const changed = model.changed;
-    console.log("State changed:", changed);
+    // console.log("State changed:", changed);
 
     // Handle mode changes first
     if (changed.mode === "search") {
