@@ -1,38 +1,74 @@
 CDK_DEPICT_URL = "https://www.simolecule.com/cdkdepict"
 
-OB_is_Ready = false;
-JSME_is_Ready = false;
-
-OpenBabel = OpenBabelModule();
 OBMOL = undefined;
-OpenBabel.onRuntimeInitialized = function() {
-  conv = new OpenBabel.ObConversionWrapper();
-  conv.setInFormat('', 'smi');
-  conv.setOutFormat('', 'smi');
-  OBMOL = new OpenBabel.OBMol();
-  OB_is_Ready = true;
-  console.log("Open Babel is ready");
-};
 
-function WaitForOB_and_JSME()
-{
-  if (OB_is_Ready && JSME_is_Ready) {
-    Initialize();
-  }
-  else {
-    setTimeout(WaitForOB_and_JSME, 200);
-  }
-}
+// Create promises for each initialization
+const jsmeReady = new Promise(resolve => {
+    window.jsmeOnLoad = () => {
+        // Add JSME callbacks and event handlers here
+        const jsmeElement = document.getElementById('JME');
+        
+        // Add behaviour to JSME
+        document.JME.setCallBack("AfterStructureModified", function(jsmeEvent) {
+            var myjsme = jsmeEvent.src;
+            if (myjsme.smiles() !== "") {
+                var navigation_url = "search/"+state.get("searchtype")+"/"+encodeURIComponent(TidySmiles(myjsme.smiles()))+"/";
+                app.navigate(navigation_url, {trigger: true});
+            }
+        });
 
-window
-  .initRDKitModule()
-  .then(function (RDKit) {
-    console.log("RDKit version: " + RDKit.version());
+        // Add drag event handlers
+        jsmeElement.addEventListener('drop', function(e) {
+            e.preventDefault();
+            const htmlData = e.dataTransfer.getData('text/html');
+            const molidx = $(htmlData).find('img').data('molidx');
+            var idx2smi = (state.get("searchtype") == "rgroups") ? rgroups_idx2smi : linkers_idx2smi;
+            var smiles = idx2smi[molidx];
+            if (TidySmiles(document.JME.smiles()) != smiles) {
+                var nsmi = smiles.replace(/\[1\*\]/, "[#0]").replace(/\*/g, "[#0]");
+                var mol = RDKit.get_mol(nsmi)
+                var sdf = mol.get_molblock();
+                document.JME.readMolFile(sdf);
+                var navigation_url = "search/"+state.get("searchtype")+"/"+encodeURIComponent(TidySmiles(document.JME.smiles()))+"/";
+                app.navigate(navigation_url, {trigger: true});
+            }
+        }, true);
+
+        $('#JME').mouseenter(function() {$('#jsme_help').show();})
+                 .mouseleave(function() {$('#jsme_help').hide();});
+                 
+        console.log("JSME is ready");
+        resolve();
+    };
+});
+
+const obReady = new Promise(resolve => {
+    OpenBabel = OpenBabelModule();
+    OpenBabel.onRuntimeInitialized = function() {
+        conv = new OpenBabel.ObConversionWrapper();
+        conv.setInFormat('', 'smi');
+        conv.setOutFormat('', 'smi');
+        OBMOL = new OpenBabel.OBMol();
+        console.log("Open Babel is ready, version: " + OpenBabel.OBReleaseVersion());
+        resolve();
+    };
+});
+
+const rdkitReady = window.initRDKitModule().then(function(RDKit) {
+    console.log("RDKit is ready, version: " + RDKit.version());
     window.RDKit = RDKit;
-    $(function() {
-      WaitForOB_and_JSME();
+    return RDKit;
+});
+
+// Wait for all components to be ready
+Promise.all([jsmeReady, obReady, rdkitReady])
+    .then(() => {
+        console.log("All components initialized");
+        Initialize();
+    })
+    .catch(error => {
+        console.error("Initialization failed:", error);
     });
-  });
 
 var STATE = Backbone.Model.extend({
   defaults: {
@@ -184,39 +220,6 @@ var Router = Backbone.Router.extend({
     });
   }
 });
-
-function jsmeOnLoad() {
-  JSME_is_Ready = true;
-  // Add behaviour to JSME
-  document.JME.setCallBack("AfterStructureModified", function(jsmeEvent) {
-    var myjsme = jsmeEvent.src;
-    if (myjsme.smiles() !== "") {
-      var navigation_url = "search/"+state.get("searchtype")+"/"+encodeURIComponent(TidySmiles(myjsme.smiles()))+"/";
-      app.navigate(navigation_url, {trigger: true});
-    }
-  });
-
-  // Add drag event handlers
-  const jsmeElement = document.getElementById('JME');
-  jsmeElement.addEventListener('drop', function(e) {
-    e.preventDefault();
-    const htmlData = e.dataTransfer.getData('text/html');
-    const molidx = $(htmlData).find('img').data('molidx');
-    var idx2smi = (state.get("searchtype") == "rgroups") ? rgroups_idx2smi : linkers_idx2smi;
-    var smiles = idx2smi[molidx];
-    if (TidySmiles(document.JME.smiles()) != smiles) {
-      var nsmi = smiles.replace(/\[1\*\]/, "[#0]").replace(/\*/g, "[#0]");
-      var mol = RDKit.get_mol(nsmi)
-      var sdf = mol.get_molblock();
-      document.JME.readMolFile(sdf);
-      var navigation_url = "search/"+state.get("searchtype")+"/"+encodeURIComponent(TidySmiles(document.JME.smiles()))+"/";
-      app.navigate(navigation_url, {trigger: true});
-    }
-  }, true);
-
-  $('#JME').mouseenter(function() {$('#jsme_help').show();})
-           .mouseleave(function() {$('#jsme_help').hide();});
-}
 
 function Initialize()
 {

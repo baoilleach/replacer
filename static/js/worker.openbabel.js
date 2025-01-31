@@ -1,23 +1,3 @@
-ReadyToRock = false;
-
-function WaitThenHandle(data){
-  if (ReadyToRock) {
-    HandleSmarts(data);
-  }
-  else {
-    setTimeout(WaitThenHandle, 250, data);
-  }
-}
-
-// We create the message handler straightaway
-// so that it is ready for any requests coming
-// from the main thread. It will wait until
-// the library is initialised before actually doing
-// anything.
-onmessage = (e) => {
-  WaitThenHandle(e.data);
-}
-
 // Globals
 QSMI = undefined;
 SEARCHTYPE = undefined;
@@ -37,6 +17,28 @@ else {
     }
   }
 }
+
+// Initialize OpenBabel
+OpenBabel = OpenBabelModule();
+
+// Create a Promise that resolves when OpenBabel is ready
+const obReady = new Promise(resolve => {
+    OpenBabel.onRuntimeInitialized = function() {
+        conv = new OpenBabel.ObConversionWrapper();
+        conv.setInFormat('', 'smi');
+        mol = new OpenBabel.OBMol();
+        console.log("Worker: Open Babel is ready");
+        resolve();
+    };
+});
+
+function HandleMessage(data) {
+    obReady.then(() => HandleSmarts(data));
+}
+
+onmessage = (e) => {
+    HandleMessage(e.data);
+};
 
 function HandleSmarts(data)
 {
@@ -86,12 +88,3 @@ function HandleSmarts(data)
                  searchtype: SEARCHTYPE});
   }
 }
-
-OpenBabel = OpenBabelModule();
-OpenBabel.onRuntimeInitialized = function() {
-  conv = new OpenBabel.ObConversionWrapper();
-  conv.setInFormat('', 'smi');
-  mol = new OpenBabel.OBMol();
-  ReadyToRock = true;
-  console.log("Open Babel is ready");
-};
