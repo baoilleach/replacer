@@ -49,6 +49,7 @@ var STATE = Backbone.Model.extend({
 window.state = new STATE;
 state.on("change", function(model) {
     const changed = model.changed;
+    console.log("State changed:", changed);
 
     // Handle mode changes first
     if (changed.mode === "search") {
@@ -191,7 +192,6 @@ function jsmeOnLoad() {
     var myjsme = jsmeEvent.src;
     if (myjsme.smiles() !== "") {
       var navigation_url = "search/"+state.get("searchtype")+"/"+encodeURIComponent(TidySmiles(myjsme.smiles()))+"/";
-      console.log("Navigating to " + navigation_url);
       app.navigate(navigation_url, {trigger: true});
     }
   });
@@ -220,7 +220,6 @@ function jsmeOnLoad() {
 
 function Initialize()
 {
-  console.log("READY!!!");
   $('#replacer').hide();
   $('input[name="btnradio"]').on('change', function() {
     var searchtype = $(this).val();
