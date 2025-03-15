@@ -12,7 +12,7 @@ Run locally
 
 To run everything locally you need a web server, an instance of CDK Depict and a single line change to the codebase.
 
-1. Start up CDK Depict via Docker. You may need to adapt the following instructions which are for Ubuntu 22.04 (via Tuomo Kallikoski)::
+1. Start up CDK Depict via Docker. You may need to adapt the following instructions which are for Ubuntu 22.04 (via Tuomo Kalliokoski)::
 
      sudo apt install docker.io
      # add yourself to the docker group in /etc/group
