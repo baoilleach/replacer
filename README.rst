@@ -5,7 +5,7 @@ ReplaceR is a webapp that suggests R group and linker replacements based on obse
 
 The URL for the webapp is https://baoilleach.github.io/replacer/. The landing page has a more detailed explanation with links to other resources.
 
-ReplacerR runs entirely in the browser (i.e. there is no backend), except for the depictions which are outsourced to CDK Depict (https://www.simolecule.com/cdkdepict/depict.html).
+ReplaceR runs entirely in the browser (i.e. there is no backend), except for the depictions which are outsourced to CDK Depict (https://www.simolecule.com/cdkdepict/depict.html).
 
 Run locally
 -----------
